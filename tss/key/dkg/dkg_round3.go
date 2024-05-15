@@ -58,7 +58,7 @@ func (info *SetupInfo) DKGStep3(msgs []*tss.Message) (*tss.KeyStep3Data, error) 
 			return nil, err
 		}
 
-		// feldman verify
+		// feldman verify 是为了验证 share 的有效性
 		if ok, err := feldman.Verify(data.Share, verifiers[msg.From]); !ok {
 			if err != nil {
 				return nil, err
@@ -73,7 +73,7 @@ func (info *SetupInfo) DKGStep3(msgs []*tss.Message) (*tss.KeyStep3Data, error) 
 		if err != nil {
 			return nil, err
 		}
-		// schnorr verify for ui
+		// schnorr verify for ui 是为了验证 ui 的有效性， ui 是 share 的一部分
 		verify := schnorr.Verify(data.Proof, point)
 		if !verify {
 			return nil, fmt.Errorf("schnorr verify fail")

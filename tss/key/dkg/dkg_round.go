@@ -11,7 +11,7 @@ import (
 )
 
 type SetupInfo struct {
-	DeviceNumber int // device id， start 1
+	DeviceNumber int // device id， start 1， 每个用户都是如此，因为下面增加了判断
 	Threshold    int //  2/n, fixed 2
 	Total        int // number of participants
 	RoundNumber  int

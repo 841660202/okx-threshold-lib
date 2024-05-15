@@ -28,6 +28,7 @@ type RefreshInfo struct {
 	commitmentMap map[int]commitment.Commitment
 }
 
+// NewRefresh过程与dkg一致
 // NewRefresh the process is consistent with dkg
 func NewRefresh(deviceNumber, total int, devoteList [2]int, ShareI *big.Int, PublicKey *curves.ECPoint) *RefreshInfo {
 	if total < 2 || deviceNumber > total || deviceNumber <= 0 {

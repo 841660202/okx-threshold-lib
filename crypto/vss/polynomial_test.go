@@ -49,7 +49,7 @@ func TestFeldman(t *testing.T) {
 	fmt.Println(verify)
 	verify, _ = feldman.Verify(shares[2], verifiers)
 	fmt.Println(verify)
-
+	// 注释：计算w21和w23
 	w21 := CalLagrangian(curve, big.NewInt(int64(1)), shares[0].Y, []*big.Int{big.NewInt(int64(1)), big.NewInt(int64(3))})
 	w23 := CalLagrangian(curve, big.NewInt(int64(3)), shares[2].Y, []*big.Int{big.NewInt(int64(1)), big.NewInt(int64(3))})
 	fmt.Println(new(big.Int).Mod(new(big.Int).Add(w21, w23), curve.N))

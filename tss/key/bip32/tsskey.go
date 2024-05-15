@@ -123,3 +123,31 @@ func uint32Bytes(i uint32) []byte {
 	binary.BigEndian.PutUint32(bytes, i)
 	return bytes
 }
+
+// 在您提供的代码中，`chaincode` 是一个用于生成密钥派生的关键参数，它在使用 HMAC-SHA512 算法进行密钥派生函数（KDF）时起到了非常重要的作用。在加密货币和密钥派生领域，特别是在 BIP32 标准中，`chaincode` 通常用于增加密钥派生的安全性。
+
+// ### 作用和意义
+// `chaincode` 作为一个额外的熵源（随机性来源），在密钥派生过程中与公钥和子索引（child index）一起被用来生成新的子密钥。这样做的目的是为了确保每一次的密钥派生都是独一无二的，即使是使用相同的公钥和子索引，只要 `chaincode` 不同，派生出的结果也会不同。这增加了密钥派生过程的安全性，防止了潜在的重放攻击和其他相关的安全威胁。
+
+// ### 在代码中的应用
+// 在您的代码中，`chaincode` 被用作 HMAC-SHA512 哈希函数的一个输入，具体在 `calPrivateOffset` 函数中实现。这个函数将 `chaincode`、公钥和子索引组合在一起，生成一个 512 位的哈希值，这个哈希值后续被用来生成新的子密钥和新的 `chaincode`。
+
+// ```go
+// func calPrivateOffset(publicKey, chaincode []byte, childIdx uint32) ([]byte, error) {
+//     hash := hmac.New(sha512.New, label)
+//     var data []byte
+//     data = append(data, chaincode...)
+//     data = append(data, publicKey...)
+//     data = append(data, uint32Bytes(childIdx)...)
+//     _, err := hash.Write(data)
+//     if err != nil {
+//         return nil, err
+//     }
+//     return hash.Sum(nil), nil
+// }
+// ```
+
+// 在这个函数中，`chaincode` 被首先加入到数据缓冲区，然后是公钥和子索引的字节表示。这个组合数据被用来生成 HMAC-SHA512 哈希值，哈希值的前 256 位用于生成新的私钥偏移量，后 256 位用于更新 `chaincode`，以用于进一步的密钥派生。
+
+// ### 总结
+// `chaincode` 在 BIP32 和类似的密钥派生协议中是一个核心组件，它帮助确保了派生出的密钥具有高度的安全性和独特性。通过在密钥派生过程中使用 `chaincode`，可以有效地防止密钥重复和某些类型的攻击，从而增强整个系统的安全性。
