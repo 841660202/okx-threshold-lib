@@ -80,6 +80,8 @@ func (p2 *P2Context) Step2(cmtD *commitment.Witness, p1Proof *schnorr.Proof) (*b
 	if !verify {
 		return nil, fmt.Errorf("schnorr verify fail")
 	}
+
+	// 计算完整签名
 	// R = k1*k2*G, k = k1*k2
 	Rx, _ := curve.ScalarMult(R1.X, R1.Y, p2.k2.Bytes())
 	r := new(big.Int).Mod(Rx, q)

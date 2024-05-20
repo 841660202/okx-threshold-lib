@@ -97,11 +97,12 @@ func (p1 *P1Context) Step3(E_k2_h_xr *big.Int) (*big.Int, *big.Int, error) {
 	if s.Sign() == 0 {
 		return nil, nil, fmt.Errorf("calculated S is zero")
 	}
+
 	message, err := hex.DecodeString(p1.message)
 	if err != nil {
 		return nil, nil, err
 	}
-	// check ecdsa signature
+	// check ecdsa signature 注意：这里不能反向hash
 	ok := ecdsa.Verify(p1.publicKey, message, r, s)
 	if !ok {
 		// IMPORTANT: If Verify fails, actively disallow signing to prevent attacks described in CVE-2023-33242

@@ -3,12 +3,13 @@ package keygen
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/okx/threshold-lib/crypto/curves"
 	"github.com/okx/threshold-lib/crypto/paillier"
 	"github.com/okx/threshold-lib/tss"
 	"github.com/okx/threshold-lib/tss/key/bip32"
 	"github.com/okx/threshold-lib/tss/key/dkg"
-	"testing"
 )
 
 const (
@@ -40,35 +41,46 @@ func TestKeyGen(t *testing.T) {
 	p2SaveData, _ := setUp2.DKGStep3(msgs2_3_in)
 	p3SaveData, _ := setUp3.DKGStep3(msgs3_3_in)
 
-	fmt.Println("setUp1", p1SaveData, p1SaveData.PublicKey)
-	fmt.Println("setUp2", p2SaveData, p2SaveData.PublicKey)
-	fmt.Println("setUp3", p3SaveData, p3SaveData.PublicKey)
+	// fmt.Println("setUp1", p1SaveData, p1SaveData.PublicKey)
+	// fmt.Println("setUp2", p2SaveData, p2SaveData.PublicKey)
+	// fmt.Println("setUp3", p3SaveData, p3SaveData.PublicKey)
 
 	fmt.Println("=========2/2 keygen==========")
 	preParams := &PreParams{}
 	err := json.Unmarshal([]byte(preParamsStr), preParams)
+	// fmt.Println("preParams", preParams)
 	if err != nil {
 		fmt.Println("preParams Unmarshal error, ", err)
 	}
+
+	// P1 和 P2 函数实际上是为了在分布式密钥生成（Distributed Key Generation，简称 DKG）过程中，对生成的密钥片段进行加密传输和验证
+
+	fmt.Println("=========paillier==========")
 	// 1-->2   1--->3
+	// paillier.NewKeyPair(8) 是一个用于生成 Paillier 加密系统密钥对的函数调用。具体来说，这个函数生成了一对 Paillier 密钥：一个公钥和一个私钥
 	paiPriKey, _, _ := paillier.NewKeyPair(8)
-	p1Data, _ := P1(p1SaveData.ShareI, paiPriKey, setUp1.DeviceNumber, setUp2.DeviceNumber, preParams)
-	fmt.Println("p1Data", p1Data)
+
+	p1Data, _ := P1(p1SaveData.ShareI, paiPriKey, setUp1.DeviceNumber /*from 1*/, setUp2.DeviceNumber /*to 2*/, preParams)
+	// fmt.Println("p1Data", p1Data)
 	publicKey, _ := curves.NewECPoint(curve, p2SaveData.PublicKey.X, p2SaveData.PublicKey.Y)
 	p2Data, _ := P2(p2SaveData.ShareI, publicKey, p1Data, setUp1.DeviceNumber, setUp2.DeviceNumber)
 	fmt.Println("p2Data", p2Data)
 
-	p1Data, _ = P1(p1SaveData.ShareI, paiPriKey, setUp1.DeviceNumber, setUp3.DeviceNumber, preParams)
-	fmt.Println("p1Data", p1Data)
+	p1Data, _ = P1(p1SaveData.ShareI, paiPriKey, setUp1.DeviceNumber /*from 1*/, setUp3.DeviceNumber /*to 3*/, preParams)
+	// fmt.Println("p1Data", p1Data)
 	p2Data, _ = P2(p3SaveData.ShareI, publicKey, p1Data, setUp1.DeviceNumber, setUp3.DeviceNumber)
 	fmt.Println("p2Data", p2Data)
 
-	fmt.Println("=========bip32==========")
+	fmt.Println("=========bip32 派生==========")
 	tssKey, _ := bip32.NewTssKey(p1SaveData.ShareI, p1SaveData.PublicKey, p1SaveData.ChainCode)
 	tssKey, _ = tssKey.NewChildKey(996)
 	fmt.Println(tssKey.PublicKey())
 
 	tssKey, _ = bip32.NewTssKey(p2SaveData.ShareI, p2SaveData.PublicKey, p2SaveData.ChainCode)
+	tssKey, _ = tssKey.NewChildKey(996)
+	fmt.Println(tssKey.PublicKey())
+
+	tssKey, _ = bip32.NewTssKey(p3SaveData.ShareI, p3SaveData.PublicKey, p3SaveData.ChainCode)
 	tssKey, _ = tssKey.NewChildKey(996)
 	fmt.Println(tssKey.PublicKey())
 

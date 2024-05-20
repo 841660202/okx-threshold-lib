@@ -6,6 +6,8 @@ import (
 	"math/big"
 )
 
+// 基于非交互零知识证明（NIZK）的Paillier密钥正确性验证
+
 // partly ported from:
 // https://github.com/ZenGo-X/zk-paillier/blob/0c1b4cbfda1723d6938c4a447a6d9c7efe571693/src/zkproofs/correct_key_ni.rs
 
@@ -39,14 +41,18 @@ func NIZKProof(N, phiN *big.Int) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+		// 计算并获取哈希值
 		seed := hash.Sum(nil)
-
+		// 生成掩码
 		rho, err := maskGeneration(NLen, seed)
 		if err != nil {
 			return nil, err
 		}
+		// 生成的rho需要对N取模
 		rho = new(big.Int).Mod(rho, N)
+		// 生成证明
 		sigma := new(big.Int).Exp(rho, NInv, N)
+
 		out = append(out, hex.EncodeToString(sigma.Bytes()))
 	}
 	return out, nil
@@ -69,7 +75,7 @@ func NIZKVerify(N *big.Int, proof []string) bool {
 			return false
 		}
 		seed := hash.Sum(nil)
-
+		// 相同的输入产生相同的掩码
 		rho, err := maskGeneration(NLen, seed)
 		if err != nil {
 			return false
@@ -80,7 +86,9 @@ func NIZKVerify(N *big.Int, proof []string) bool {
 		if err != nil {
 			return false
 		}
+		// 反向计算
 		tmp := new(big.Int).Exp(new(big.Int).SetBytes(sigma), N, N)
+		// 比较rho
 		if rho.Cmp(tmp) != 0 {
 			return false
 		}
@@ -97,6 +105,7 @@ func NIZKVerify(N *big.Int, proof []string) bool {
 	return true
 }
 
+// 这是一个纯函数
 func maskGeneration(outLength int, seed []byte) (*big.Int, error) {
 	msklen := outLength/DigestSize + 1
 	var bytes []byte

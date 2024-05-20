@@ -5,14 +5,17 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"math/big"
+	"testing"
+
 	"github.com/decred/dcrd/dcrec/edwards/v2"
 	"github.com/okx/threshold-lib/tss"
 	"github.com/okx/threshold-lib/tss/key/dkg"
-	"math/big"
-	"testing"
 )
 
 func TestEd25519(t *testing.T) {
+	// for循环的主要作用是多次执行密钥生成和签名步骤，以确保代码在多次执行过程中表现一致，并且没有出现任何潜在的错误或不稳定性。这是一种常见的测试策略，尤其是在涉及到随机性和复杂交互的情况下。
+
 	for i := 0; i < 10; i++ {
 		p1Data, p2Data, p3Data := keyGen(curve)
 
@@ -45,6 +48,7 @@ func sign_p1_p2(p1Data, p2Data *tss.KeyStep3Data, publicKey *edwards.PublicKey, 
 	fmt.Println("si_2: ", si_2, r)
 
 	s := new(big.Int).Add(si_1, si_2)
+	// outputs the signature
 	signature := edwards.NewSignature(r, s)
 	ret := signature.Verify(message, publicKey)
 	fmt.Println("Verify: ", ret)
@@ -68,6 +72,7 @@ func sign_p1_p3(p1Data, p3Data *tss.KeyStep3Data, publicKey *edwards.PublicKey, 
 	fmt.Println("si_3: ", si_3, r)
 
 	s := new(big.Int).Add(si_1, si_3)
+	// outputs the signature
 	signature := edwards.NewSignature(r, s)
 	ret := signature.Verify(message, publicKey)
 	fmt.Println("Verify: ", ret)
@@ -91,6 +96,7 @@ func sign_p2_p3(p2Data, p3Data *tss.KeyStep3Data, publicKey *edwards.PublicKey, 
 	fmt.Println("si_3: ", si_3, r)
 
 	s := new(big.Int).Add(si_3, si_2)
+	// outputs the signature
 	signature := edwards.NewSignature(r, s)
 	ret := signature.Verify(message, publicKey)
 	fmt.Println("Verify: ", ret)

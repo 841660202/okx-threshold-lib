@@ -26,29 +26,64 @@ const (
 )
 
 func TestTwoSign(t *testing.T) {
+	// 定义椭圆曲线的阶
 	N := curve.N
+
+	// 创建SHA-256哈希实例
 	hash := sha256.New()
+
+	// 将消息 "hello" 写入哈希实例
 	hash.Write([]byte("hello"))
+
+	// 计算消息的哈希值
 	message := hash.Sum(nil)
 
+	// 随机生成私钥片段 x1 和 x2
 	x1 := crypto.RandomNum(N)
 	x2 := crypto.RandomNum(N)
+
+	// 通过私钥片段 x1 和 x2 生成完整的私钥，并导出相应的公钥
 	_, publicKey := secp256k1.PrivKeyFromBytes(new(big.Int).Add(x1, x2).Bytes())
 
+	// 生成Paillier加密系统的公钥和私钥对
 	paiPri, paiPub, _ := paillier.NewKeyPair(8)
 
+	// 初始化 P1 的上下文，传入公钥、消息和Paillier私钥
 	p1 := NewP1(publicKey.ToECDSA(), hex.EncodeToString(message), paiPri)
+
+	// 使用Paillier公钥加密私钥片段 x1
 	E_x1, _, _ := paiPub.Encrypt(x1)
+
+	// 初始化 P2 的上下文，传入私钥片段 x2、加密的 x1、公钥、Paillier公钥和消息
 	p2 := NewP2(x2, E_x1, publicKey.ToECDSA(), paiPub, hex.EncodeToString(message))
 
+	// 1. 生成签名
+
+	// P1 执行第一步，生成承诺
 	commit, _ := p1.Step1()
+
+	// P2 执行第一步，生成 Schnorr 证明和 R2
 	bobProof, R2, _ := p2.Step1(commit)
 
+	// 2. 交换签名
+
+	// P1 执行第二步，验证 P2 的 Schnorr 证明，并生成自己的 Schnorr 证明
 	proof, cmtD, _ := p1.Step2(bobProof, R2)
+
+	// P2 执行第二步，验证 P1 的承诺和 Schnorr 证明，计算并返回加密的 (h + xr)/k2
 	E_k2_h_xr, _ := p2.Step2(cmtD, proof)
 
+	// 3. 验证签名，生成完整签名
+	// P1 执行第三步，解密 (h + xr)/k2，计算最终的签名 (r, s)
 	r, s, _ := p1.Step3(E_k2_h_xr)
-	fmt.Println(r, s)
+
+	// 输出签名结果
+	// fmt.Println("Signature (r, s):", r, s)
+
+	// 验证签名
+
+	valid := ecdsa.Verify(publicKey.ToECDSA(), message, r, s)
+	fmt.Println("Signature valid:", valid)
 }
 
 func TestEcdsaSign(t *testing.T) {
@@ -71,6 +106,7 @@ func TestEcdsaSign(t *testing.T) {
 	fmt.Println("=========bip32==========")
 	tssKey, err := bip32.NewTssKey(p2SaveData.X2, p2Data.PublicKey, p2Data.ChainCode)
 	tssKey, err = tssKey.NewChildKey(996)
+
 	x2 := tssKey.ShareI()
 	pubKey := &ecdsa.PublicKey{Curve: curve, X: tssKey.PublicKey().X, Y: tssKey.PublicKey().Y}
 
