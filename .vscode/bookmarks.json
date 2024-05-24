@@ -1,0 +1,164 @@
+{
+	"files": [
+		{
+			"path": "tss/key/dkg/dkg_round3.go",
+			"bookmarks": [
+				{
+					"line": 49,
+					"column": 2,
+					"label": ""
+				},
+				{
+					"line": 70,
+					"column": 2,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/ecdsa/keygen/keygen_test.go",
+			"bookmarks": [
+				{
+					"line": 56,
+					"column": 2,
+					"label": ""
+				},
+				{
+					"line": 62,
+					"column": 4,
+					"label": ""
+				},
+				{
+					"line": 65,
+					"column": 11,
+					"label": ""
+				},
+				{
+					"line": 68,
+					"column": 8,
+					"label": ""
+				},
+				{
+					"line": 74,
+					"column": 1,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/ecdsa/sign/sign_test.go",
+			"bookmarks": [
+				{
+					"line": 51,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 57,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 111,
+					"column": 22,
+					"label": ""
+				},
+				{
+					"line": 119,
+					"column": 4,
+					"label": ""
+				},
+				{
+					"line": 120,
+					"column": 4,
+					"label": ""
+				},
+				{
+					"line": 123,
+					"column": 3,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/ecdsa/sign/party1.go",
+			"bookmarks": [
+				{
+					"line": 82,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 90,
+					"column": 1,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/ecdsa/sign/party2.go",
+			"bookmarks": [
+				{
+					"line": 78,
+					"column": 1,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/key/reshare/update_round3.go",
+			"bookmarks": [
+				{
+					"line": 28,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 52,
+					"column": 2,
+					"label": ""
+				},
+				{
+					"line": 114,
+					"column": 2,
+					"label": ""
+				},
+				{
+					"line": 125,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 132,
+					"column": 1,
+					"label": ""
+				},
+				{
+					"line": 137,
+					"column": 1,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/key/reshare/update_round.go",
+			"bookmarks": [
+				{
+					"line": 48,
+					"column": 2,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "tss/key/reshare/update_round2.go",
+			"bookmarks": [
+				{
+					"line": 36,
+					"column": 1,
+					"label": ""
+				}
+			]
+		}
+	]
+}

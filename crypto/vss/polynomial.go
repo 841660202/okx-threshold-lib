@@ -33,6 +33,9 @@ func InitPolynomial(curve elliptic.Curve, secret *big.Int, degree int) (*Polynom
 		}
 		Coefficients[i] = r // random generation coefficient
 	}
+	fmt.Println()
+	fmt.Print(Coefficients)
+	fmt.Println()
 	return &Polynomial{
 		Coefficients: Coefficients,
 		QMod:         q,
@@ -41,7 +44,8 @@ func InitPolynomial(curve elliptic.Curve, secret *big.Int, degree int) (*Polynom
 
 // EvaluatePolynomial a polynomial with coefficients such that:
 // EvaluatePolynomial(x):
-// 		returns a + bx + cx^2 + dx^3
+//
+//	returns a + bx + cx^2 + dx^3
 func (p *Polynomial) EvaluatePolynomial(x *big.Int) *Share {
 	result := new(big.Int).Set(p.Coefficients[0])
 	tmp := big.NewInt(1)

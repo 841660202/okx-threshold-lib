@@ -8,7 +8,7 @@ import (
 	"github.com/okx/threshold-lib/crypto/curves"
 )
 
-//  verifiable secret sharing scheme
+// verifiable secret sharing scheme
 type Feldman struct {
 	threshold int // power of polynomial add one
 	limit     int //
@@ -28,17 +28,17 @@ func NewFeldman(threshold, limit int, curve elliptic.Curve) (*Feldman, error) {
 
 // Evaluate return verifiers and shares
 func (fm *Feldman) Evaluate(secret *big.Int) ([]*curves.ECPoint, []*Share, error) {
-	poly, err := InitPolynomial(fm.curve, secret, fm.threshold-1)
+	poly, err := InitPolynomial(fm.curve, secret, fm.threshold-1) // 生成多项式
 	if err != nil {
 		return nil, nil, err
 	}
 	shares := make([]*Share, fm.limit)
 	for i := 1; i <= fm.limit; i++ {
-		shares[i-1] = poly.EvaluatePolynomial(big.NewInt(int64(i)))
+		shares[i-1] = poly.EvaluatePolynomial(big.NewInt(int64(i))) // 计算分享（部分秘密）
 	}
 	verifiers := make([]*curves.ECPoint, len(poly.Coefficients))
 	for i, c := range poly.Coefficients {
-		verifiers[i] = curves.ScalarToPoint(fm.curve, c)
+		verifiers[i] = curves.ScalarToPoint(fm.curve, c) // 计算验证者
 	}
 	return verifiers, shares, nil
 }

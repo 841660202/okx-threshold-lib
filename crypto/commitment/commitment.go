@@ -26,7 +26,7 @@ func NewCommitment(secrets ...*big.Int) *HashCommitment {
 	}
 	r := new(big.Int).SetBytes(rBytes[:])
 	parts := make([]*big.Int, len(secrets)+1)
-	parts[0] = r
+	parts[0] = r // 0位放随机数
 	for i := 1; i < len(parts); i++ {
 		parts[i] = secrets[i-1]
 	}
@@ -34,7 +34,7 @@ func NewCommitment(secrets ...*big.Int) *HashCommitment {
 
 	cmt := &HashCommitment{}
 	cmt.C = hash
-	cmt.Msg = parts
+	cmt.Msg = parts // 放密钥份额
 	return cmt
 }
 
@@ -51,7 +51,7 @@ func (cmt *HashCommitment) Verify() bool {
 // Open open the commitment
 func (cmt *HashCommitment) Open() (bool, Witness) {
 	if cmt.Verify() {
-		return true, cmt.Msg[1:]
+		return true, cmt.Msg[1:] // 秘密slice
 	} else {
 		return false, nil
 	}

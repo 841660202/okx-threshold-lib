@@ -61,10 +61,12 @@ func TestEcdsaSign(t *testing.T) {
 		fmt.Println("preParams Unmarshal error, ", err)
 		return
 	}
-
+	// 同态加密
 	paiPrivate, _, _ := paillier.NewKeyPair(8)
+	// 这个是ecdsa-keygen-party1
 	p1Dto, _ := keygen.P1(p1Data.ShareI, paiPrivate, p1Data.Id, p2Data.Id, preParams)
 	publicKey, _ := curves.NewECPoint(curve, p2Data.PublicKey.X, p2Data.PublicKey.Y)
+	// 这个是ecdsa-keygen-party2
 	p2SaveData, err := keygen.P2(p2Data.ShareI, publicKey, p1Dto, p1Data.Id, p2Data.Id)
 	fmt.Println(p2SaveData, err)
 

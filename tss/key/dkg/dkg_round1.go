@@ -28,14 +28,15 @@ func (info *SetupInfo) DKGStep1() (map[int]*tss.Message, error) {
 		return nil, err
 	}
 	// each one generates a chaincode, actual chaincode = sum(chaincode)
-	chaincode := crypto.RandomNum(info.curve.Params().N)
+	chaincode := crypto.RandomNum(info.curve.Params().N) // 验证和承诺：链码还可以用于生成承诺（commitment），即参与者对某一值进行承诺，而不透露该值的具体内容
 
 	// compute verifiers and chaincode commitment
 	var input []*big.Int
-	input = append(input, chaincode)
+	input = append(input, chaincode) // 第一个是chaincode
 	for i := 0; i < len(verifiers); i++ {
 		input = append(input, verifiers[i].X, verifiers[i].Y)
 	}
+	// 创建一个Commitment对象
 	hashCommitment := commitment.NewCommitment(input...)
 
 	info.ui = ui
@@ -45,7 +46,7 @@ func (info *SetupInfo) DKGStep1() (map[int]*tss.Message, error) {
 	info.chaincode = chaincode
 	info.RoundNumber = 2
 
-	out := make(map[int]*tss.Message, info.Total-1)
+	out := make(map[int]*tss.Message, info.Total-1) // p2p 发送给其他参与者的消息
 	for _, id := range info.Ids() {
 		if id == info.DeviceNumber {
 			continue
@@ -64,5 +65,5 @@ func (info *SetupInfo) DKGStep1() (map[int]*tss.Message, error) {
 		}
 		out[id] = message
 	}
-	return out, nil
+	return out, nil // out 当前参与者：收集发送给其他参与者的消息(消息的内容为 hash 承诺)
 }

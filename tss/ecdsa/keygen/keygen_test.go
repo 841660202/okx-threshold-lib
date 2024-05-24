@@ -3,12 +3,12 @@ package keygen
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/okx/threshold-lib/crypto/curves"
 	"github.com/okx/threshold-lib/crypto/paillier"
 	"github.com/okx/threshold-lib/tss"
-	"github.com/okx/threshold-lib/tss/key/bip32"
 	"github.com/okx/threshold-lib/tss/key/dkg"
-	"testing"
 )
 
 const (
@@ -16,6 +16,7 @@ const (
 )
 
 func TestKeyGen(t *testing.T) {
+	// DKG
 	setUp1 := dkg.NewSetUp(1, 3, curve)
 	setUp2 := dkg.NewSetUp(2, 3, curve)
 	setUp3 := dkg.NewSetUp(3, 3, curve)
@@ -40,9 +41,9 @@ func TestKeyGen(t *testing.T) {
 	p2SaveData, _ := setUp2.DKGStep3(msgs2_3_in)
 	p3SaveData, _ := setUp3.DKGStep3(msgs3_3_in)
 
-	fmt.Println("setUp1", p1SaveData, p1SaveData.PublicKey)
-	fmt.Println("setUp2", p2SaveData, p2SaveData.PublicKey)
-	fmt.Println("setUp3", p3SaveData, p3SaveData.PublicKey)
+	fmt.Println("🌹 setUp1 PublicKey:", p1SaveData.PublicKey)
+	fmt.Println("🌹 setUp2 PublicKey:", p2SaveData.PublicKey)
+	fmt.Println("🌹 setUp3 PublicKey:", p3SaveData.PublicKey)
 
 	fmt.Println("=========2/2 keygen==========")
 	preParams := &PreParams{}
@@ -50,8 +51,11 @@ func TestKeyGen(t *testing.T) {
 	if err != nil {
 		fmt.Println("preParams Unmarshal error, ", err)
 	}
+
+	// 生成 P1Data 和 P2Data 是为了在不泄露私钥份额的情况下，安全地进行2-Party ECDSA签名
 	// 1-->2   1--->3
 	paiPriKey, _, _ := paillier.NewKeyPair(8)
+
 	p1Data, _ := P1(p1SaveData.ShareI, paiPriKey, setUp1.DeviceNumber, setUp2.DeviceNumber, preParams)
 	fmt.Println("p1Data", p1Data)
 	publicKey, _ := curves.NewECPoint(curve, p2SaveData.PublicKey.X, p2SaveData.PublicKey.Y)
@@ -63,13 +67,32 @@ func TestKeyGen(t *testing.T) {
 	p2Data, _ = P2(p3SaveData.ShareI, publicKey, p1Data, setUp1.DeviceNumber, setUp3.DeviceNumber)
 	fmt.Println("p2Data", p2Data)
 
-	fmt.Println("=========bip32==========")
-	tssKey, _ := bip32.NewTssKey(p1SaveData.ShareI, p1SaveData.PublicKey, p1SaveData.ChainCode)
-	tssKey, _ = tssKey.NewChildKey(996)
-	fmt.Println(tssKey.PublicKey())
+	// fmt.Println("=========bip32==========")
+	// tssKey, _ := bip32.NewTssKey(p1SaveData.ShareI, p1SaveData.PublicKey, p1SaveData.ChainCode)
+	// tssKey, _ = tssKey.NewChildKey(996)
+	// fmt.Println(p1SaveData.ShareI)
+	// fmt.Println(tssKey.ShareI())
+	// fmt.Println()
+	// fmt.Println("🌹公钥：")
+	// fmt.Println(tssKey.PublicKey())
 
-	tssKey, _ = bip32.NewTssKey(p2SaveData.ShareI, p2SaveData.PublicKey, p2SaveData.ChainCode)
-	tssKey, _ = tssKey.NewChildKey(996)
-	fmt.Println(tssKey.PublicKey())
+	// tssKey, _ = bip32.NewTssKey(p2SaveData.ShareI, p2SaveData.PublicKey, p2SaveData.ChainCode)
+	// tssKey, _ = tssKey.NewChildKey(996)
+	// fmt.Println()
+	// fmt.Println()
+	// fmt.Println(p2SaveData.ShareI)
+	// fmt.Println(tssKey.ShareI())
+	// fmt.Println()
+	// fmt.Println("🌹公钥：")
+	// fmt.Println(tssKey.PublicKey())
+
+	// tssKey, _ = bip32.NewTssKey(p3SaveData.ShareI, p3SaveData.PublicKey, p3SaveData.ChainCode)
+	// tssKey, _ = tssKey.NewChildKey(996)
+	// fmt.Println()
+	// fmt.Println()
+	// fmt.Println(p3SaveData.ShareI)
+	// fmt.Println(tssKey.ShareI())
+	// fmt.Println("🌹公钥：")
+	// fmt.Println(tssKey.PublicKey())
 
 }

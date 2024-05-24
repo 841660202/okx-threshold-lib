@@ -3,6 +3,8 @@ package reshare
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/okx/threshold-lib/crypto/commitment"
 	"github.com/okx/threshold-lib/crypto/curves"
 	"github.com/okx/threshold-lib/crypto/schnorr"
@@ -11,6 +13,7 @@ import (
 
 // DKGStep2 same as dkg step2
 func (info *RefreshInfo) DKGStep2(msgs []*tss.Message) (map[int]*tss.Message, error) {
+	log.Printf("RefreshInfo DKGStep2: ID=%d, ShareI=%v\n", info.DeviceNumber, info.shareI)
 	if info.RoundNumber != 2 {
 		return nil, fmt.Errorf("round error")
 	}
@@ -30,7 +33,7 @@ func (info *RefreshInfo) DKGStep2(msgs []*tss.Message) (map[int]*tss.Message, er
 		info.commitmentMap[msg.From] = *content.C
 	}
 
-	uiG := curves.ScalarToPoint(info.curve, info.ui)
+	uiG := curves.ScalarToPoint(info.curve, info.ui /*秘密份额*/)
 	proof, err := schnorr.Prove(info.ui, uiG)
 	if err != nil {
 		return nil, err

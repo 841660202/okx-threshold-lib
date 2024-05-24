@@ -14,9 +14,9 @@ func TestProof(t *testing.T) {
 	q := secp256k1.S256().N
 	x := crypto.RandomNum(q)
 	X := curves.ScalarToPoint(secp256k1.S256(), x)
-	proof, _ := Prove(x, X)
+	proof, _ := Prove(x, X) // 使用私钥生成证明
 
-	res := Verify(proof, X)
+	res := Verify(proof, X) // 使用公钥来验证
 	if !res {
 		t.Fatal("result should be true")
 	}
